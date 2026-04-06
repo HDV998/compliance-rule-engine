@@ -131,6 +131,7 @@ def update_rules(rule_id:int, data:RuleCreateRequest):
     return {
         "msg":"updated successfully"
     }
+
     
     
     
