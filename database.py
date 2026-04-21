@@ -4,3 +4,4 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 engine = create_engine("sqlite:///./rules.db")
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
+print("DB PATH:", engine.url)

@@ -25,10 +25,18 @@ class Transaction(BaseModel):
     
 class rule(BaseModel):
     kind: Literal["rule"]
-    field: str
-    operator: str
+    field: Literal['amount', 'country']
+    operator: Literal['>', '<', '>=', '<=', '==']
     value: Any
-        
+    
+    @model_validator(mode="after")
+    def check_value_type(self):
+        if self.field == "amount" and not isinstance(self.value, (int, float)):
+            raise ValueError("the amount must be a number")
+        if self.field == "country" and not isinstance(self.value, (str)):
+            raise ValueError("the value must be a country")
+        return self
+            
 class rulegroup(BaseModel):
     kind: Literal["group"]
     type: Literal["AND", "OR", "NOT"]
@@ -132,7 +140,22 @@ def update_rules(rule_id:int, data:RuleCreateRequest):
         "msg":"updated successfully"
     }
     
+@app.delete("/rules/{rule_id}")
+def delete_rules(rule_id: int):
+    db = SessionLocal()
     
+    rule = db.query(RuleModel).filter(RuleModel.id == rule_id).first()
+    
+    if rule is None:
+        raise HTTPException(status_code=404, detail="Rule does not exist")
+    
+    print("Fetched rule:", rule)
+    
+    db.delete(rule)
+    print("DELETE endpoint called with id:", rule_id)
+    db.commit()
+    
+    return {"message": "Rule deleted successfully"}
     
     
     

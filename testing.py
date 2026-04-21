@@ -8,6 +8,9 @@ def apply_rule(transaction, rule):
     op = rule["operator"]
     value = rule["value"]
     
+    if rule['field'] is None:
+        raise ValueError("the field is empty")
+    
     field_value = transaction.get(rule['field'])
     
     if field_value is None:
